@@ -1,0 +1,514 @@
+<div class="min-h-screen flex flex-col bg-white text-white">
+  <!-- Navbar -->
+  <app-navbar class="fixed top-0 w-full z-50"></app-navbar>
+
+  <div class="flex flex-1 pt-16">
+    <!-- Sidebar -->
+    <div class="w-64 fixed h-screen bg-gray-800 text-white z-40 overflow-y-auto">
+      <app-sidebar></app-sidebar>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-1 ml-64 bg-gray-100 text-gray-900 overflow-y-auto">
+      <!-- Main content header -->
+      <div id="main" class="main-content flex-1 bg-gray-100 ">
+        
+        <div class="bg-gray-800 shadow-md fixed z-30 w-[calc(100%-16rem)] h-18 top-16">
+          <div class="bg-white p-3 shadow text-2xl text-gray-600 sticky-top">
+            <i class="fas fa-desktop"></i>
+            <span> Lista de Equipos</span>
+          </div>
+        </div>
+
+       <!--HEADER  -->
+      <div class="flex flex-col md:flex-row justify-between md:items-center items-stretch gap-3 p-4 sm:p-5 bg-white shadow-sm rounded-lg mx-2 sm:mx-4 mt-20 mb-6 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] overflow-hidden">
+       
+        <div class="flex flex-wrap justify-center md:justify-start gap-3">
+          <button
+            type="button"
+            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium py-2.5 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+            (click)="openRegistroModal()"
+          
+          >
+            <i class="fas fa-plus"></i>
+             Registrar Equipos
+          </button>
+
+         <button
+            class="flex items-center justify-center gap-2 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-700 hover:to-gray-600 text-white font-medium py-2.5 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+            type="button"
+            routerLink="/content"
+            >
+              <i class="fas fa-arrow-left"></i>
+              Volver
+            </button>
+        </div>
+   
+         <!-- BARRA BUSCADOR-->
+        <div class="relative w-full md:w-auto">
+          <input
+           class="block w-full md:w-64 lg:w-80  pl-10 pr-4 py-2.5 rounded-full border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition duration-150 bg-gray-50"
+            type="search"
+            [(ngModel)]="filter.searchTerm"
+            placeholder="Buscar equipos..."
+          />
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+        </div>
+        </div>
+
+     <div
+      *ngIf="modalRegistroAbierto"
+      class="fixed inset-0 flex items-center justify-center z-50"
+    >
+  <div
+    class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+    (click)="closeRegistroModal()"
+  ></div>
+  <div
+    class="relative bg-white w-full max-w-4xl mx-4 rounded-2xl shadow-2xl overflow-hidden transform transition-all scale-100 animate-fadeIn z-50"
+  >
+    <div
+      class="flex justify-between items-center bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4"
+    >
+      <h2 class="text-xl font-bold text-white flex items-center gap-2">
+        <i class="fas fa-plus text-white text-lg"></i>
+        Registrar Nuevo Equipo
+      </h2>
+      <button
+        type="button"
+        (click)="closeRegistroModal()"
+        class="text-white hover:text-gray-200 transition"
+      >
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+
+    <div class="p-6 bg-gray-50 overflow-y-auto max-h-[80vh]">
+      <app-formcomp
+        (close)="closeRegistroModal()"
+        (created)="onEquipoCreado($event)"
+      ></app-formcomp>
+    </div>
+    </div>
+   </div>
+
+
+      <!-- Tabla -->
+      <div class="w-full p-3">
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div class="overflow-auto max-h-[calc(100vh-220px)]">
+        <table class="min-w-[1000px] w-full text-sm text-gray-700">
+          <thead class="sticky top-0 bg-gray-100 border-b border-gray-400 uppercase text-gray-800 text-xs z-10">
+            <tr>
+              <th class="p-3 text-center">Id</th>
+              <th class="p-3 text-center">Marca</th>
+              <th class="p-3 text-center">Modelo</th>
+              <th class="p-3 text-center">Memoria</th>
+              <th class="p-3 text-center">Procesador</th>
+              <th class="p-3 text-center">Office</th>
+              <th class="p-3 text-center">Serial</th>
+              <th class="p-3 text-center">Sistema Operativo</th>
+              <th class="p-3 text-center">Fecha Adquisición</th>
+              <th class="p-3 text-center">Estado</th>
+              <th class="p-3 text-center">Responsable</th>
+              <th class="p-3 text-center">Archivo</th>
+              <th class="p-3 text-center">Editar</th>
+              <th class="p-3 text-center">Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let equipo of filterEquipos(); let i = index" class="hover:bg-gray-50 border-b border-gray-100 transition">
+              <td class="p-3 text-center">{{ i + 1 }}</td>
+              <td class="p-3 text-center">{{ equipo.marca }}</td>
+              <td class="p-3 text-center">{{ equipo.modelo }}</td>
+              <td class="p-3 text-center">{{ equipo.memoria }}</td>
+              <td class="p-3 text-center">{{ equipo.procesador }}</td>
+              <td class="p-3 text-center cursor-pointer text-blue-600 hover:underline" (click)="verLicenciasDeEquipo(equipo.id)">
+                {{ equipo.office }}
+              </td>
+              <td class="p-3 text-center">{{ equipo.serial }}</td>
+              <td class="p-3 text-center">{{ equipo.sistema_operativo }}</td>
+              <td class="p-3 text-center">{{ equipo.fecha_adquisicion }}</td>
+              <td class="p-3 text-center">{{ equipo.estado }}</td>
+              <td class="p-3 text-center">
+                {{ equipo.responsable.nombre || 'No asignado' }} {{ equipo.responsable.apellido || '' }}
+              </td>
+              <td class="p-3 text-center">
+                <a *ngIf="equipo.archivo" [href]="equipo.archivo" target="_blank" class="text-blue-600 hover:underline">
+                  <i class="fa fa-file text-lg"></i>
+                </a>
+              </td>
+              <td class="p-3 text-center">
+                <button class="text-blue-500 hover:text-blue-700" (click)="openModalAndEdit(equipo)">
+                  <i class="fa fa-edit text-xl"></i>
+                </button>
+              </td>
+              <td class="p-3 text-center">
+                <button class="text-red-500 hover:text-red-700" (click)="delete(equipo.id!)">
+                  <i class="fa fa-trash text-xl"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </div>
+      </div>
+      
+   <!-- MODAL DE EDICIÓN -->
+   <div *ngIf="modalAbierto" class="fixed inset-0 flex items-center justify-center z-50">
+   <div
+    class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+    (click)="closeModal()"></div>
+  <div
+    class="relative bg-white w-full max-w-4xl mx-4 rounded-2xl shadow-2xl overflow-hidden transform transition-all scale-100 animate-fadeIn z-50"
+  >
+    <!-- Encabezado -->
+    <div class="flex justify-between items-center bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4">
+      <h1 class="text-xl font-bold text-white flex items-center gap-2">
+        <i class="fas fa-edit"></i> Editar Equipo
+      </h1>
+      <button
+        type="button"
+        (click)="closeModal()"
+        class="text-white hover:text-gray-200 transition"
+      >
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="p-6 bg-gray-50 overflow-y-auto max-h-[80vh]">
+      <div class="modal-container bg-white p-6 rounded-2xl shadow-xl max-w-5xl mx-auto border border-gray-100">
+
+      <form id="editEquipoForm" class="space-y-6" #editEquipoForm="ngForm">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Marca -->
+          <div class="flex items-center space-x-2 transition-all">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fas fa-desktop text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <input
+                type="text"
+                id="marca"
+                name="marca"
+                placeholder=" "
+                [(ngModel)]="equipoSeleccionado.marca"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-transparent"
+              />
+              <label
+                for="marca"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 z-10 origin-[0]
+                peer-focus:left-3 peer-focus:text-blue-600 peer-placeholder-shown:scale-100
+                peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3
+                peer-focus:scale-75 peer-focus:-translate-y-6 bg-white px-1"
+              >
+                Marca del Equipo
+              </label>
+            </div>
+          </div>
+
+          <!-- Memoria -->
+          <div class="flex items-center space-x-2 transition-all">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fas fa-memory text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <input
+                type="text"
+                id="memoria"
+                name="memoria"
+                placeholder=" "
+                [(ngModel)]="equipoSeleccionado.memoria"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-transparent"
+              />
+              <label for="memoria"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 z-10 origin-[0]
+                peer-focus:text-blue-600 peer-placeholder-shown:scale-100
+                peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3
+                peer-focus:scale-75 peer-focus:-translate-y-6 bg-white px-1">
+                Memoria RAM
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Modelo -->
+          <div class="flex items-center space-x-2 transition-all">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fas fa-cube text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <input
+                type="text"
+                id="modelo"
+                name="modelo"
+                placeholder=" "
+                [(ngModel)]="equipoSeleccionado.modelo"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-transparent"
+              />
+              <label for="modelo"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 bg-white px-1
+                peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3">
+                Modelo
+              </label>
+            </div>
+          </div>
+
+          <!-- Procesador -->
+          <div class="flex items-center space-x-2 transition-all">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fas fa-microchip text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <input
+                type="text"
+                id="procesador"
+                name="procesador"
+                placeholder=" "
+                [(ngModel)]="equipoSeleccionado.procesador"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-transparent"
+              />
+              <label for="procesador"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 bg-white px-1
+                peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3">
+                Procesador
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRID 3 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Office -->
+          <div class="flex items-center space-x-2 transition-all">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fas fa-file-word text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <input
+                type="text"
+                id="office"
+                name="office"
+                placeholder=" "
+                [(ngModel)]="equipoSeleccionado.office"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-transparent"
+              />
+              <label for="office"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 bg-white px-1
+                peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3">
+                Versión de Office
+              </label>
+            </div>
+          </div>
+
+          <!-- Serial -->
+          <div class="flex items-center space-x-2 transition-all">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fas fa-barcode text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <input
+                type="text"
+                id="serial"
+                name="serial"
+                placeholder=" "
+                [(ngModel)]="equipoSeleccionado.serial"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-transparent"
+              />
+              <label for="serial"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 bg-white px-1
+                peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3">
+                Número de Serie
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRID 4 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Sistema Operativo -->
+          <div class="flex items-center space-x-2 transition-all">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fab fa-windows text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <input
+                type="text"
+                id="sistema_operativo"
+                name="sistema_operativo"
+                placeholder=" "
+                [(ngModel)]="equipoSeleccionado.sistema_operativo"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder-transparent"
+              />
+              <label for="sistema_operativo"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 bg-white px-1
+                peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3">
+                Sistema Operativo
+              </label>
+            </div>
+          </div>
+
+          <!-- Fecha Adquisición -->
+          <div class="flex items-center space-x-2 transition-all">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fas fa-calendar-alt text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <input
+                type="date"
+                id="fecha_adquisicion"
+                name="fecha_adquisicion"
+                [(ngModel)]="equipoSeleccionado.fecha_adquisicion"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+              />
+              <label for="fecha_adquisicion"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 bg-white px-1
+                peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3">
+                Fecha de Adquisición
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRID 5 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Estado -->
+          <div class="flex items-center space-x-2 transition-all">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fas fa-toggle-on text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <select
+                id="estado"
+                name="estado"
+                [(ngModel)]="equipoSeleccionado.estado"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+              >
+                <option value="" disabled></option>
+                <option value="Activo">Activo</option>
+                <option value="En reparación">En reparación</option>
+                <option value="Retirado">Retirado</option>
+              </select>
+              <label for="estado"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 bg-white px-1
+                peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3">
+                Estado
+              </label>
+            </div>
+          </div>
+
+          <!-- Responsable -->
+          <div class="flex items-center space-x-2 transition-all relative">
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+              <i class="fas fa-user text-lg"></i>
+            </div>
+            <div class="relative z-0 w-full group">
+              <select
+                id="responsable"
+                name="responsable"
+                [(ngModel)]="equipoSeleccionado.responsable.id"
+                class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+              >
+                <option *ngFor="let col of colaboradoresFiltrados" [ngValue]="col.id">
+                  {{ col.nombre }} {{ col.apellido }}
+                </option>
+              </select>
+              <label for="responsable"
+                class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 bg-white px-1
+                peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3">
+                Responsable
+              </label>
+
+              <!-- Botón mostrar todos -->
+              <div class="absolute top-0 right-0">
+                <button
+                  type="button"
+                  (click)="mostrarTodos = !mostrarTodos"
+                  class="px-3 py-1 text-xs rounded-lg border border-gray-300 shadow-sm transition hover:bg-gray-100 bg-white text-gray-700"
+                >
+                  {{ mostrarTodos ? 'Solo de esta empresa' : 'Mostrar todos' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Archivo -->
+        <div class="flex items-center space-x-2 transition-all">
+          <div class="p-3 bg-gradient-to-r from-blue-500 to-blue-400 text-white rounded-xl flex items-center justify-center shadow-sm">
+            <i class="fas fa-paperclip text-lg"></i>
+          </div>
+          <div class="relative z-0 w-full group">
+            <input
+              type="file"
+              id="archivo"
+              (change)="onFileSelected($event)"
+              class="peer w-full p-3 rounded-xl bg-white border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+              placeholder=" "
+            />
+            <label for="archivo"
+              class="absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 left-3 bg-white px-1
+              peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:top-3">
+               Archivo
+            </label>
+          </div>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 mt-4">
+          <button
+            type="button"
+            class="px-6 py-2 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-all shadow-sm"
+            (click)="closeModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+            (click)="update()"
+          >
+            Actualizar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  </div>
+  </div>
+
+  <div *ngIf="modalLicenciasAbierto" 
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
+      <div class="bg-white rounded-xl shadow-lg w-[500px] p-6">
+      <h2 class="text-lg font-bold mb-4 text-center">Licencias instaladas</h2>
+
+    <div *ngIf="licenciasEquipo.length === 0" class="text-center text-gray-500">
+      No hay licencias registradas para este equipo.
+    </div>
+
+    <ul *ngIf="licenciasEquipo.length > 0" class="space-y-3">
+      <li *ngFor="let lic of licenciasEquipo"
+          class="p-3 rounded-lg border bg-green-100">
+        <div class="font-semibold text-xl">Tipo de licencia:{{ lic.tipo_licencia | titlecase }}</div>
+        <div class="italic text-gray-600 text-xl"> 
+          Licencia Permanente 
+        </div>
+      </li>
+    </ul>
+
+    <div class="mt-4 flex justify-end">
+      <button (click)="cerrarModalLicencias()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+</div>
